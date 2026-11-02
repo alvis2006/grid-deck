@@ -1,0 +1,64 @@
+/* Grid Deck: slide, player and print styles (shared by editor and export). */
+.gd-slide { position: relative; width: 1920px; height: 1080px; overflow: hidden; background: var(--gd-bg); color: var(--gd-text); font-family: var(--gd-font-body); -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility; }
+.gd-slide *, .gd-slide *::before, .gd-slide *::after { box-sizing: border-box; }
+.gd-bg { position: absolute; inset: 0; background-position: center; background-repeat: no-repeat; }
+.gd-el { position: absolute; transform-origin: 50% 50%; }
+.gd-inner { position: absolute; inset: 0; }
+.gd-hidden { display: none; }
+
+/* text */
+.gd-txt { width: 100%; overflow-wrap: break-word; word-break: normal; line-break: strict; white-space: normal; outline: none; }
+.gd-txt .ln + .ln { margin-top: var(--gd-para, 0); }
+.gd-txt.list-bullet .ln, .gd-txt.list-number .ln { position: relative; padding-left: 1.15em; }
+.gd-txt.list-bullet .ln::before { content: ''; position: absolute; left: .1em; top: calc((var(--gd-lh, 1.4) * 1em - .38em) / 2); width: .38em; height: .38em; border-radius: 50%; background: var(--gd-accent); }
+.gd-txt.list-number { counter-reset: gdli; }
+.gd-txt.list-number .ln { counter-increment: gdli; padding-left: 1.6em; }
+.gd-txt.list-number .ln::before { content: counter(gdli, decimal-leading-zero); position: absolute; left: 0; top: 0; font-size: .7em; line-height: calc(var(--gd-lh, 1.4) / .7 * 1em); font-weight: 800; color: var(--gd-accent); letter-spacing: 0; }
+.gd-txt .hl { color: var(--gd-accent); }
+.gd-txt .hl2 { color: var(--gd-accent2); }
+.gd-txt .hl3 { color: var(--gd-accent3); }
+.gd-txt .mu { color: var(--gd-muted); }
+.gd-txt .sm { font-size: .42em; font-weight: 700; margin-left: .06em; letter-spacing: 0; }
+.gd-txt .mark { background: linear-gradient(transparent 58%, color-mix(in srgb, var(--gd-accent3) 60%, transparent) 58%, color-mix(in srgb, var(--gd-accent3) 60%, transparent) 92%, transparent 92%); padding: 0 .06em; }
+
+/* shapes, images, charts, tables */
+.gd-line { display: flex; align-items: center; }
+.gd-line-stroke { width: 100%; height: 0; }
+.gd-image img { display: block; width: 100%; height: 100%; user-select: none; -webkit-user-drag: none; }
+.gd-ph { display: flex; align-items: center; justify-content: center; background: var(--gd-surface); border: 3px dashed var(--gd-line); color: var(--gd-muted); font-size: 28px; }
+.gd-chart-svg { display: block; overflow: visible; }
+.gd-table { width: 100%; height: 100%; border-collapse: collapse; color: var(--gd-text); }
+.gd-table th, .gd-table td { padding: .45em .7em; text-align: left; border-bottom: 2px solid var(--gd-line); vertical-align: middle; }
+.gd-table th { font-weight: 800; color: var(--gd-muted); border-bottom: 3px solid var(--gd-text); font-size: .9em; letter-spacing: .02em; }
+.gd-table td:first-child { font-weight: 700; }
+.gd-table .hl-col { background: color-mix(in srgb, var(--gd-accent) 10%, transparent); color: var(--gd-accent); font-weight: 800; }
+.gd-table th.hl-col { color: var(--gd-accent); }
+
+/* player */
+.gd-player { position: relative; width: 100%; height: 100%; background: #000; overflow: hidden; user-select: none; }
+.gd-viewport { position: absolute; inset: 0; overflow: hidden; cursor: pointer; }
+.gd-frames { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; transform-origin: 0 0; overflow: hidden; }
+.gd-frame { position: absolute; inset: 0; }
+.gd-empty { color: #888; font: 32px system-ui; padding: 80px; }
+.gd-notes { display: none; position: absolute; left: 0; right: 0; bottom: 0; max-height: 38%; overflow: auto; background: rgba(12, 12, 14, .92); color: #f2f2f0; font: 20px/1.6 "Noto Sans TC", "Microsoft JhengHei", system-ui, sans-serif; padding: 18px 28px 22px; white-space: pre-wrap; z-index: 5; }
+.gd-player.show-notes .gd-notes { display: block; }
+.gd-notes-head { font-size: 14px; color: #9a9da3; margin-bottom: 6px; letter-spacing: .04em; }
+
+/* exported page */
+html.gd-export, html.gd-export body { margin: 0; height: 100%; background: #000; overflow: hidden; }
+#gd-root { position: fixed; inset: 0; }
+
+/* static (screenshot) & print */
+html.gd-static-root, html.gd-static-root body { margin: 0; width: 1920px; height: 1080px; overflow: hidden; background: #000; }
+html.gd-print-root, html.gd-print-root body { margin: 0; height: auto; overflow: visible; background: #fff; }
+.gd-print .gd-page { width: 1920px; height: 1080px; overflow: hidden; page-break-after: always; break-after: page; }
+.gd-print .gd-page:last-child { page-break-after: auto; break-after: auto; }
+@page { size: 1920px 1080px; margin: 0; }
+@media print { html, body { -webkit-print-color-adjust: exact; print-color-adjust: exact; } }
+
+/* deck backdrop: shared background lines (deck.backdrop) */
+.gd-backdrop { position: absolute; inset: 0; pointer-events: none; }
+.gd-backdrop svg { display: block; width: 100%; height: 100%; overflow: visible; }
+.gd-player .gd-slide.gd-has-backdrop { background: transparent !important; }
+.gd-player .gd-slide.gd-has-backdrop > .gd-backdrop { display: none; }
+.gd-backdrop-veil { position: absolute; inset: 0; }

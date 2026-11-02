@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Grid Deck 編輯器</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect width='16' height='16' rx='3' fill='%232f6bff'/%3E%3Cpath d='M5 1v14M11 1v14M1 5h14M1 11h14' stroke='white' stroke-width='1.2' opacity='.8'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="/runtime/deck.css">
+<link rel="stylesheet" href="/runtime/editor.css">
+</head>
+<body data-mode="edit">
+<header id="topbar">
+  <div class="tb-group brand">
+    <span class="logo" aria-hidden="true">▦</span>
+    <input id="deck-title" class="title-input" spellcheck="false" aria-label="簡報名稱">
+    <span id="stage-badge" class="badge"></span>
+  </div>
+  <div class="tb-group tabs" role="tablist" aria-label="模式">
+    <button data-mode="edit" class="tab active" role="tab">排版</button>
+    <button data-mode="anim" class="tab" role="tab">動畫</button>
+  </div>
+  <div class="tb-group" id="insert-group">
+    <button data-insert="text" title="新增文字（T）">文字</button>
+    <div class="dropdown">
+      <button data-menu="shape-menu">形狀 ▾</button>
+      <div class="menu" id="shape-menu">
+        <button data-insert="rect">矩形</button>
+        <button data-insert="ellipse">圓形</button>
+        <button data-insert="triangle">三角形</button>
+        <button data-insert="line">線條</button>
+      </div>
+    </div>
+    <button data-insert="image" title="插入圖片（也可以直接拖放或貼上）">圖片</button>
+    <button data-insert="chart">圖表</button>
+    <button data-insert="table">表格</button>
+  </div>
+  <div class="tb-group" id="grid-group">
+    <label class="chk" title="顯示網格（G）"><input type="checkbox" id="grid-show"> 網格</label>
+    <label class="chk" title="拖曳時吸附網格與其他元素（按住 Alt 暫時關閉）"><input type="checkbox" id="grid-snap"> 吸附</label>
+    <select id="grid-size" title="格距（px）">
+      <option value="15">15 px</option>
+      <option value="30">30 px</option>
+      <option value="60">60 px</option>
+      <option value="120">120 px</option>
+    </select>
+  </div>
+  <div class="tb-group">
+    <select id="theme-select" title="主題"></select>
+  </div>
+  <div class="tb-group">
+    <button aria-label="復原" id="undo" title="復原（Ctrl+Z）">↶</button>
+    <button aria-label="重做" id="redo" title="重做（Ctrl+Y）">↷</button>
+  </div>
+  <div class="tb-spacer"></div>
+  <span id="status" class="status" role="status" aria-live="polite">載入中…</span>
+  <button id="confirm-btn" class="ghost-accent">✓ 確認靜態稿</button>
+  <div class="dropdown">
+    <button data-menu="version-menu">版本 ▾</button>
+    <div class="menu wide right" id="version-menu"></div>
+  </div>
+  <div class="dropdown">
+    <button data-menu="export-menu">匯出 ▾</button>
+    <div class="menu wide right" id="export-menu">
+      <button data-export="html,pdf">HTML ＋ PDF</button>
+      <button data-export="html">只要 HTML</button>
+      <button data-export="pdf">只要 PDF</button>
+      <div id="export-result" class="menu-note"></div>
+    </div>
+  </div>
+  <button aria-label="快捷鍵說明" id="help-btn" title="快捷鍵">?</button>
+  <a href="/runtime/workbench.html" target="_blank" style="color:var(--ui-accent);padding:5px 8px">動畫工作台 ↗</a>
+  <button id="play-btn" class="primary" title="從目前頁面播放（F5）">▶ 播放</button>
+</header>
+<div id="banner" hidden></div>
+<main id="main">
+  <aside id="sidebar">
+    <div id="slide-list"></div>
+    <div class="side-actions">
+      <div class="dropdown up">
+        <button data-menu="add-slide-menu" class="ghost-accent">＋ 新增頁面</button>
+        <div class="menu" id="add-slide-menu"></div>
+      </div>
+      <button id="dup-slide" title="複製本頁">複製</button>
+      <button id="del-slide" title="刪除本頁">刪除</button>
+    </div>
+  </aside>
+  <section id="workspace" aria-label="簡報畫布">
+    <div id="workspace-tools" aria-label="工作區顯示">
+      <div class="view-buttons">
+        <button id="toggle-slides" aria-controls="sidebar" aria-expanded="true">頁面</button>
+        <button id="toggle-inspector" aria-controls="inspector" aria-expanded="true">屬性</button>
+        <button id="toggle-notes" aria-controls="notes-bar" aria-expanded="true">講稿</button>
+      </div>
+      <span id="canvas-scale" title="畫布自動配合可用空間"></span>
+      <button id="focus-canvas" aria-pressed="false" title="收合面板，放大畫布">專注畫布</button>
+    </div>
+    <div id="stage-wrap"><div id="stage"></div></div>
+    <div id="notes-bar">
+      <label for="notes">講稿／備註</label>
+      <textarea id="notes" placeholder="這一頁要講的內容（播放時按 N 顯示）"></textarea>
+    </div>
+  </section>
+  <aside id="inspector"></aside>
+</main>
+<div id="toast" role="status" aria-live="polite"></div>
+<div id="modal" hidden></div>
+<input type="file" id="file-input" accept="image/*" hidden>
+<script src="/runtime/themes.js"></script>
+<script src="/runtime/render.js"></script>
+<script src="/runtime/player.js"></script>
+<script src="/runtime/layouts.js"></script>
+<script src="/runtime/editor.js"></script>
+</body>
+</html>
